@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Connais-tu vraiment Mérignac ?</title>
+<meta name="description" content="Le quiz qui révèle ce que les Mérignacais pensent vraiment de leur ville. 21 500 foyers visités, 1 630 réponses.">
+<meta property="og:title" content="Connais-tu vraiment Mérignac ?">
+<meta property="og:description" content="Le quiz interactif sur les résultats du grand questionnaire citoyen. Teste tes connaissances !">
+<meta property="og:type" content="website">
+<meta property="og:image" content="og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Connais-tu vraiment Mérignac ?">
+<meta name="twitter:description" content="Le quiz interactif sur les résultats du grand questionnaire citoyen. 12 questions, 3 min.">
+<meta name="twitter:image" content="og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --blue:#000091;--blue-deep:#040452;--yellow:#FFFF00;--yellow-soft:#FFF84D;
+  --bg:#080840;--card-bg:#0c0c5a;--white:#fff;--gray:#a0a0cc;
+  --success:#22c55e;--error:#ef4444;--orange:#f59e0b;
+}
+html{font-size:16px;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:linear-gradient(160deg,#000091 0%,#060673 40%,#040452 100%);
+  background-attachment:fixed;color:var(--white);
+  min-height:100dvh;overflow-x:hidden;position:relative;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 20% 50%,rgba(0,0,180,0.2) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 20%,rgba(255,255,0,0.05) 0%,transparent 50%);
+  pointer-events:none;z-index:0;
+}
+
+/* ===== LAYOUT ===== */
+.app{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
+
+/* ===== INTRO SCREEN ===== */
+.screen{display:none;flex-direction:column;align-items:center;padding:24px 20px;flex:1}
+.screen.active{display:flex}
+
+.intro{justify-content:center;text-align:center;gap:28px}
+.intro .eyebrow{
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--yellow);
+  font-weight:700;opacity:0.8;
+}
+.intro h1{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,12vw,64px);
+  line-height:0.95;letter-spacing:-1px;
+}
+.intro h1 em{color:var(--yellow);font-style:normal}
+.intro .desc{
+  font-size:15px;line-height:1.6;color:var(--gray);max-width:340px;
+}
+.intro .desc b{color:var(--white);font-weight:700}
+.intro .survey-stats{
+  display:flex;gap:20px;justify-content:center;flex-wrap:wrap;
+}
+.intro .survey-stats .stat{text-align:center}
+.intro .survey-stats .stat b{
+  display:block;font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--yellow);
+}
+.intro .survey-stats .stat span{font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:1px}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:16px 36px;border-radius:5px;font-family:'DM Sans',sans-serif;
+  font-size:16px;font-weight:700;border:none;cursor:pointer;
+  transition:all 0.3s cubic-bezier(0.4,0,0.2,1);position:relative;overflow:hidden;
+}
+.btn-primary{
+  background:var(--yellow);color:var(--blue-deep);
+  box-shadow:0 0 40px rgba(255,255,0,0.2);
+}
+.btn-primary:hover{transform:scale(1.04);box-shadow:0 0 60px rgba(255,255,0,0.35)}
+.btn-primary:active{transform:scale(0.97)}
+.btn-secondary{
+  background:rgba(255,255,255,0.08);color:var(--white);
+  border:1px solid rgba(255,255,255,0.15);
+}
+.btn-secondary:hover{background:rgba(255,255,255,0.14)}
+
+/* ===== PROGRESS ===== */
+.progress-bar{
+  position:sticky;top:0;z-index:10;padding:16px 20px 12px;
+  background:linear-gradient(180deg,#000091 60%,transparent);
+}
+.progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.progress-label{font-size:12px;color:var(--gray);font-weight:500}
+.progress-count{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--yellow)}
+.progress-track{height:3px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--yellow);border-radius:3px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1)}
+
+/* ===== QUIZ CARD ===== */
+.quiz-area{flex:1;display:flex;flex-direction:column;padding:0 20px 24px}
+
+.card-container{
+  perspective:1200px;flex:1;display:flex;align-items:center;justify-content:center;
+  min-height:420px;
+}
+.card{
+  width:100%;position:relative;transform-style:preserve-3d;
+  transition:transform 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+.card.flipped{transform:rotateY(180deg)}
+
+.card-face{
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;
+  border-radius:5px;padding:28px 24px;overflow:hidden;
+}
+.card-front{
+  position:relative;
+  background:linear-gradient(145deg,rgba(0,0,120,0.9),rgba(4,4,72,0.95));
+  border:1px solid rgba(255,255,255,0.1);
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.card-back{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  transform:rotateY(180deg);
+  background:linear-gradient(145deg,rgba(0,0,110,0.95),rgba(4,4,82,0.98));
+  border:1px solid rgba(255,255,0,0.15);
+  box-shadow:0 20px 60px rgba(0,0,0,0.4),0 0 30px rgba(255,255,0,0.05);
+  overflow-y:auto;
+}
+
+.card-theme{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:700;
+  color:var(--yellow);margin-bottom:16px;opacity:0.7;
+}
+.card-theme .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+.card-question{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,7vw,34px);
+  line-height:1.05;margin-bottom:24px;letter-spacing:-0.5px;
+}
+
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice{
+  padding:14px 18px;border-radius:5px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+  font-size:15px;font-weight:500;cursor:pointer;
+  transition:all 0.25s ease;text-align:left;color:var(--white);
+  font-family:'DM Sans',sans-serif;position:relative;overflow:hidden;
+}
+.choice:hover:not(.disabled){background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2)}
+.choice.selected{border-color:var(--yellow);background:rgba(255,255,0,0.08)}
+.choice.correct{
+  border-color:var(--success);background:rgba(34,197,94,0.12);
+  animation:pulse-green 0.5s ease;
+}
+.choice.wrong{
+  border-color:var(--error);background:rgba(239,68,68,0.08);opacity:0.6;
+}
+.choice.disabled{pointer-events:none}
+.choice .check{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  font-size:18px;opacity:0;transition:opacity 0.3s;
+}
+.choice.correct .check,.choice.wrong .check{opacity:1}
+
+@keyframes pulse-green{
+  0%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)}
+  70%{box-shadow:0 0 0 12px rgba(34,197,94,0)}
+  100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}
+}
+
+.answer-reveal{
+  margin-top:20px;padding:16px;border-radius:5px;
+  background:rgba(255,255,0,0.06);border-left:3px solid var(--yellow);
+  display:none;
+}
+.answer-reveal.show{display:block;animation:fadeUp 0.4s ease}
+.answer-reveal .answer-big{
+  font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--yellow);
+}
+.answer-reveal .answer-source{font-size:11px;color:var(--gray);margin-top:4px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARD BACK - programme */
+.card-back .back-header{
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--yellow);font-weight:700;margin-bottom:12px;opacity:0.7;
+}
+.card-back .back-stat{
+  font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1.1;
+  margin-bottom:16px;opacity:0.6;
+}
+.card-back .back-title{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,6vw,28px);
+  line-height:1.1;color:var(--yellow);margin-bottom:14px;
+}
+.card-back .back-proposals{list-style:none;display:flex;flex-direction:column;gap:10px}
+.card-back .back-proposals li{
+  font-size:14px;line-height:1.5;padding-left:18px;position:relative;color:rgba(255,255,255,0.85);
+}
+.card-back .back-proposals li::before{
+  content:'→';position:absolute;left:0;color:var(--yellow);font-weight:700;
+}
+
+.card-actions{
+  display:flex;gap:10px;margin-top:20px;padding-top:0;
+}
+.card-actions .btn{flex:1;padding:12px;font-size:14px;border-radius:5px}
+
+/* ===== RESULT SCREEN ===== */
+.result{justify-content:center;text-align:center;gap:24px}
+.result .score-circle{
+  width:140px;height:140px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin:0 auto;position:relative;
+}
+.result .score-circle::before{
+  content:'';position:absolute;inset:-3px;border-radius:50%;
+  background:conic-gradient(var(--yellow) var(--pct),rgba(255,255,255,0.08) var(--pct));
+  z-index:0;
+}
+.result .score-circle::after{
+  content:'';position:absolute;inset:3px;border-radius:50%;
+  background:#000091;z-index:1;
+}
+.result .score-circle .score-num{
+  position:relative;z-index:2;font-family:'Bebas Neue',sans-serif;
+  font-size:48px;color:var(--yellow);line-height:1;
+}
+.result .score-circle .score-label{
+  position:relative;z-index:2;font-size:11px;color:var(--gray);
+  text-transform:uppercase;letter-spacing:1px;
+}
+.result h2{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1.1}
+.result h2 em{color:var(--yellow);font-style:normal}
+.result .result-desc{font-size:14px;color:var(--gray);line-height:1.6;max-width:340px}
+.result .result-cta{
+  padding:20px;border-radius:5px;
+  background:linear-gradient(145deg,rgba(0,0,145,0.6),rgba(4,4,82,0.8));
+  border:1px solid rgba(255,255,0,0.2);text-align:center;
+  position:relative;overflow:hidden;
+}
+.result .result-cta::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--yellow);
+}
+.result .result-cta .cta-name{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--yellow)}
+.result .result-cta .cta-list{font-size:13px;color:var(--white);margin-top:2px;font-weight:500}
+.result .result-cta .cta-rassemble{
+  font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--yellow);
+  letter-spacing:2px;margin-top:6px;
+}
+.result .result-cta .cta-alliance{font-size:11px;color:var(--gray);margin-top:4px}
+.result .result-cta .cta-link{
+  display:inline-block;margin-top:12px;font-size:13px;color:var(--blue-deep);
+  text-decoration:none;font-weight:700;background:var(--yellow);
+  padding:10px 24px;border-radius:5px;
+}
+.result .result-cta .cta-link:hover{box-shadow:0 0 20px rgba(255,255,0,0.3)}
+.result .share-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.result .share-row .btn{padding:12px 20px;font-size:13px;border-radius:5px}
+
+.result .footer-strip{
+  font-size:10px;color:var(--gray);opacity:0.5;margin-top:8px;
+  text-transform:uppercase;letter-spacing:1px;
+}
+
+/* ===== ANIMATIONS ===== */
+.fade-in{animation:fadeUp 0.6s cubic-bezier(0.4,0,0.2,1) both}
+.fade-in-d1{animation-delay:0.1s}
+.fade-in-d2{animation-delay:0.2s}
+.fade-in-d3{animation-delay:0.3s}
+.fade-in-d4{animation-delay:0.4s}
+.fade-in-d5{animation-delay:0.5s}
+
+.btn-whatsapp{
+  background:#25D366;color:#fff;
+  box-shadow:0 0 20px rgba(37,211,102,0.2);
+}
+.btn-whatsapp:hover{box-shadow:0 0 30px rgba(37,211,102,0.35);transform:scale(1.03)}
+.btn-whatsapp:active{transform:scale(0.97)}
+.btn-whatsapp svg{width:20px;height:20px;fill:#fff;flex-shrink:0}
+
+/* ===== PDF MODAL ===== */
+.pdf-modal{
+  display:none;position:fixed;inset:0;z-index:100;
+  background:rgba(0,0,20,0.92);backdrop-filter:blur(8px);
+  flex-direction:column;align-items:center;justify-content:center;padding:16px;
+}
+.pdf-modal.open{display:flex}
+.pdf-modal-header{
+  width:100%;max-width:900px;display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:10px;
+}
+.pdf-modal-header .pdf-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--yellow)}
+.pdf-modal-close{
+  width:36px;height:36px;border-radius:5px;border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.08);color:var(--white);font-size:20px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.pdf-modal-close:hover{background:rgba(255,255,255,0.15)}
+.pdf-modal iframe{
+  width:100%;max-width:900px;flex:1;border:none;border-radius:5px;
+  background:#fff;max-height:80dvh;
+}
+.pdf-modal-footer{
+  width:100%;max-width:900px;display:flex;gap:10px;margin-top:10px;justify-content:center;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:400px){
+  .card-face{padding:22px 18px}
+  .card-question{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- INTRO -->
+  <div class="screen intro active" id="screen-intro">
+    <div class="eyebrow fade-in">Grand questionnaire citoyen</div>
+    <h1 class="fade-in fade-in-d1">Connais-tu<br>vraiment<br><em>Mérignac</em> ?</h1>
+    <p class="desc fade-in fade-in-d2">
+      Pendant 12 mois, nous avons sillonné <b>tous les quartiers</b>. 
+      Les Mérignacais nous ont dit ce qu'ils pensent vraiment. 
+      <b>Et toi, tu connais ces chiffres ?</b>
+    </p>
+    <div class="survey-stats fade-in fade-in-d3">
+      <div class="stat"><b>21 500</b><span>Foyers visités</span></div>
+      <div class="stat"><b>1 630</b><span>Réponses</span></div>
+      <div class="stat"><b>617</b><span>Témoignages</span></div>
+    </div>
+    <button class="btn btn-primary fade-in fade-in-d4" onclick="startQuiz()">
+      Jouer →
+    </button>
+    <div class="fade-in fade-in-d5" style="font-size:11px;color:var(--gray);opacity:0.5">12 questions · 3 min</div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-bar">
+      <div class="progress-top">
+        <span class="progress-label">Question</span>
+        <span class="progress-count" id="progress-count">1/12</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="quiz-area">
+      <div class="card-container">
+        <div class="card" id="card">
+          <div class="card-face card-front" id="card-front">
+            <div class="card-theme"><span class="dot"></span><span id="q-theme"></span></div>
+            <div class="card-question" id="q-text"></div>
+            <div class="choices" id="q-choices"></div>
+            <div class="answer-reveal" id="q-reveal">
+              <div class="answer-big" id="q-answer-big"></div>
+              <div class="answer-source" id="q-source"></div>
+            </div>
+            <div class="card-actions" id="front-actions" style="display:none">
+              <button class="btn btn-primary" onclick="flipCard()">Voir notre réponse →</button>
+            </div>
+          </div>
+          <div class="card-face card-back" id="card-back">
+            <div class="back-header">Notre programme</div>
+            <div class="back-stat" id="b-stat"></div>
+            <div class="back-title" id="b-title"></div>
+            <ul class="back-proposals" id="b-proposals"></ul>
+            <div class="card-actions">
+              <button class="btn btn-secondary" onclick="flipCard()">← Revoir</button>
+              <button class="btn btn-primary" id="btn-next" onclick="nextCard()">Suivante →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen result" id="screen-result">
+    <div class="score-circle" id="score-circle" style="--pct:0%">
+      <span class="score-num" id="score-num">0</span>
+      <span class="score-label">/ 12</span>
+    </div>
+    <h2 id="result-title"></h2>
+    <p class="result-desc" id="result-desc"></p>
+    <div class="result-cta">
+      <div class="cta-name">THIERRY MILLET</div>
+      <div class="cta-list">Candidat à la mairie de Mérignac</div>
+      <div class="cta-rassemble">MÉRIGNAC NOUS RASSEMBLE</div>
+      <div class="cta-alliance">Liste d'union · Société civile · Droite &amp; Centre</div>
+      <a class="cta-link" href="#" onclick="openPdf();return false">Découvrir le programme complet →</a>
+    </div>
+    <div class="share-row">
+      <button class="btn btn-primary" id="btn-share" onclick="shareQuiz()">Partager mon score</button>
+      <button class="btn btn-secondary" onclick="restartQuiz()">Rejouer</button>
+    </div>
+    <a class="btn btn-whatsapp" href="https://wa.me/33620350289?text=Bonjour%20!%20Je%20viens%20de%20faire%20le%20quiz%20%22Connais-tu%20vraiment%20M%C3%A9rignac%20%3F%22%20et%20j%27aimerais%20en%20savoir%20plus%20sur%20le%20projet%20de%20Thierry%20Millet." target="_blank" rel="noopener" style="text-decoration:none;width:100%;max-width:340px;padding:14px 24px;font-size:15px">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Parler avec l'équipe de campagne
+    </a>
+    <div class="footer-strip">21 500 foyers · 1 630 réponses · 617 témoignages · 30 ans d'engagement<br>15 &amp; 22 mars 2026</div>
+  </div>
+
+  <!-- PDF MODAL -->
+  <div class="pdf-modal" id="pdf-modal" onclick="if(event.target===this)closePdf()">
+    <div class="pdf-modal-header">
+      <span class="pdf-title">Notre projet 2026-2032 pour l'alternance</span>
+      <button class="pdf-modal-close" onclick="closePdf()">✕</button>
+    </div>
+    <iframe id="pdf-iframe" src=""></iframe>
+    <div class="pdf-modal-footer">
+      <a class="btn btn-primary" href="programme.pdf" download style="text-decoration:none;font-size:13px;padding:10px 20px">📥 Télécharger le PDF</a>
+      <button class="btn btn-secondary" onclick="closePdf()" style="font-size:13px;padding:10px 20px">Fermer</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    theme:"Sécurité",
+    question:"Quelle part des Mérignacais se sent en sécurité dans leur ville ?",
+    choices:["1 sur 2","1 sur 3","1 sur 5"],
+    correct:1,
+    answerBig:"1 sur 3",
+    source:"Questionnaire citoyen — 1 630 réponses",
+    backStat:"Seul 1 Mérignacais sur 3 se sent en sécurité",
+    backTitle:"Nous restaurerons l'autorité municipale",
+    proposals:[
+      "Doubler le budget sécurité pour renforcer effectifs, équipements et vidéoprotection",
+      "Créer des antennes de police municipale à Beutre et Bourranville",
+      "Passer d'un maître-chien unique à une brigade cynophile",
+      "Intégrer l'IA au dispositif de vidéoprotection"
+    ]
+  },
+  {
+    theme:"Sécurité",
+    question:"De combien les cambriolages ont-ils augmenté à Mérignac entre 2016 et 2023 ?",
+    choices:["+20%","+35%","+48%"],
+    correct:2,
+    answerBig:"+48 %",
+    source:"Ministère de l'Intérieur — État 4001",
+    backStat:"298 cambriolages en 2016, 441 en 2023. Plus de 1 par jour.",
+    backTitle:"Rétablir la sécurité au quotidien",
+    proposals:[
+      "Généraliser l'armement de la police municipale",
+      "Doter la police de motos pour des interventions rapides",
+      "Rétablir l'éclairage des rues la nuit avec détecteurs de présence",
+      "Renforcer les dispositifs Voisins Vigilants et Solidaires"
+    ]
+  },
+  {
+    theme:"Urbanisme",
+    question:"Quel pourcentage des Mérignacais souhaite freiner l'urbanisation ?",
+    choices:["52 %","73 %","89 %"],
+    correct:1,
+    answerBig:"73,3 %",
+    source:"Questionnaire citoyen — 1 630 réponses",
+    backStat:"Près de 3 Mérignacais sur 4 disent stop au béton",
+    backTitle:"Nous modérerons l'urbanisation",
+    proposals:[
+      "Réorienter le PLU pour un urbanisme plus humain",
+      "Refondre la charte d'urbanisme en faveur de la qualité du cadre de vie",
+      "Assouplir les règles de constructibilité pour l'habitat individuel",
+      "Réduire les îlots de chaleur et créer des zones de fraîcheur"
+    ]
+  },
+  {
+    theme:"Urbanisme",
+    question:"Mérignac Soleil promettait 47 m² de nature par logement. Combien seront réellement livrés ?",
+    choices:["38 m²","27 m²","16 m²"],
+    correct:2,
+    answerBig:"16 m²",
+    source:"France 2030 — Démonstrateurs Ville Durable",
+    backStat:"3 fois moins de nature que promis. La réalité derrière le label.",
+    backTitle:"Accélérer la transition écologique",
+    proposals:[
+      "Tendre vers la règle 3-30-300 : 3 arbres visibles, 30% de végétal, espace vert à 300m",
+      "Créer un square au centre de Mérignac face au tram",
+      "Lutter contre l'imperméabilisation des sols",
+      "Installer pergolas et ombrières végétalisées dans les quartiers"
+    ]
+  },
+  {
+    theme:"Fiscalité",
+    question:"Quelle part des Mérignacais a constaté une hausse de la taxe foncière depuis 2014 ?",
+    choices:["3 sur 5","4 sur 5","9 sur 10"],
+    correct:1,
+    answerBig:"4 sur 5",
+    source:"Questionnaire citoyen — 1 630 réponses",
+    backStat:"80% des habitants constatent la hausse. Et le service ne suit pas.",
+    backTitle:"Protéger votre pouvoir d'achat",
+    proposals:[
+      "Audit approfondi de la gestion de la Ville en début de mandat",
+      "Objectif : stabiliser la fiscalité locale",
+      "Gestion sobre recherchant l'efficacité de chaque euro dépensé",
+      "Limiter strictement les notes de frais et déplacements des élus"
+    ]
+  },
+  {
+    theme:"Familles",
+    question:"Combien de places en crèche pour 2 nouveau-nés à Mérignac ?",
+    choices:["2 places","1,5 place","1 place"],
+    correct:2,
+    answerBig:"1 place pour 2",
+    source:"Données communales — 418 places / ~800 naissances/an",
+    backStat:"88,3% des Mérignacais déplorent le manque de crèches",
+    backTitle:"Nous serons aux côtés des familles",
+    proposals:[
+      "Clarifier les critères d'attribution et créer de nouveaux berceaux",
+      "Sécuriser la dépose des enfants aux abords des écoles",
+      "Réhabiliter l'ensemble des écoles en état de vétusté",
+      "Concerter sur les rythmes scolaires dont la semaine de 4 jours"
+    ]
+  },
+  {
+    theme:"Mobilité",
+    question:"Quelle part des Mérignacais se sent en sécurité à vélo ?",
+    choices:["1 sur 2","1 sur 3","1 sur 5"],
+    correct:1,
+    answerBig:"1 sur 3",
+    source:"Questionnaire citoyen — 1 630 réponses",
+    backStat:"Et 75% trouvent les trottoirs inadaptés aux piétons",
+    backTitle:"Favoriser la fluidité de toutes les mobilités",
+    proposals:[
+      "Créer des pistes cyclables en site propre entre quartiers",
+      "Plan de rénovation des trottoirs dans 150 rues",
+      "Éclairer les passages piétons pour sécuriser les traversées",
+      "Navettes aux heures de pointe vers les axes de tram"
+    ]
+  },
+  {
+    theme:"Quartiers",
+    question:"Quel pourcentage des Mérignacais ne se sent pas écouté par la municipalité ?",
+    choices:["60 %","75 %","85 %"],
+    correct:2,
+    answerBig:"85 %",
+    source:"Questionnaire citoyen — 1 630 réponses",
+    backStat:"Et seulement 1 habitant sur 6 trouve l'info municipale transparente",
+    backTitle:"Un maire proche des Mérignacais",
+    proposals:[
+      "\"Le Café du Maire\" : rencontre informelle au marché du samedi",
+      "\"Le Grand Rendez-vous\" : échange annuel avec toute la ville",
+      "\"Un Quartier, un Élu\" : un élu dédié à chaque quartier",
+      "Remplacer 4 concierges par 10 agents de proximité + mairie mobile"
+    ]
+  },
+  {
+    theme:"Commerce",
+    question:"Quelle part des Mérignacais juge insuffisant le soutien aux entreprises locales ?",
+    choices:["38 %","49 %","59 %"],
+    correct:2,
+    answerBig:"58,6 %",
+    source:"Questionnaire citoyen — 1 630 réponses",
+    backStat:"56,9% estiment aussi l'aide aux commerçants insuffisante",
+    backTitle:"Soutenir l'économie locale et le commerce",
+    proposals:[
+      "Créer un incubateur dédié au commerce et à l'innovation locale",
+      "Acquérir des cellules commerciales pour des loyers acceptables",
+      "Dynamiser le marché du mercredi au centre-ville",
+      "Améliorer l'accès des TPE/PME aux marchés publics de la ville"
+    ]
+  },
+  {
+    theme:"Mérignac en chiffres",
+    question:"Combien de crimes et délits par jour à Mérignac en 2023 ?",
+    choices:["4 par jour","6 par jour","Plus de 8 par jour"],
+    correct:2,
+    answerBig:"8,5 / jour",
+    source:"Ministère de l'Intérieur — 3 112 faits en 2023",
+    backStat:"41 crimes et délits pour 1 000 habitants. Chaque année.",
+    backTitle:"Mérignac mérite mieux",
+    proposals:[
+      "Coopération renforcée entre polices municipale et nationale",
+      "Lutte contre les points de deal",
+      "Réserve communale citoyenne sur la base du volontariat",
+      "Comité de suivi sécurité autour du futur Centre de Rétention"
+    ]
+  },
+  {
+    theme:"Mérignac en chiffres",
+    question:"De combien la population de Mérignac a-t-elle augmenté en 30 ans ?",
+    choices:["+22 %","+42 %","+61 %"],
+    correct:1,
+    answerBig:"+42 %",
+    source:"INSEE — de 57 000 à 80 898 habitants",
+    backStat:"+42% d'habitants mais les équipements n'ont pas suivi",
+    backTitle:"Adapter la ville à sa croissance",
+    proposals:[
+      "Rénover toutes les infrastructures sportives vétustes",
+      "Aménager la plaine des sports de Beutre (gymnase, parcours santé)",
+      "Implanter un lieu culturel polyvalent secteur Marne Soleil",
+      "Créer un événement sportif interquartiers chaque septembre"
+    ]
+  },
+  {
+    theme:"Démocratie",
+    question:"Depuis combien d'années Mérignac est-elle gouvernée sans alternance ?",
+    choices:["52 ans","67 ans","82 ans"],
+    correct:2,
+    answerBig:"82 ans",
+    source:"Depuis 1944 — même famille politique sans interruption",
+    backStat:"Il est temps d'offrir à Mérignac une respiration démocratique.",
+    backTitle:"L'alternance pour Mérignac",
+    proposals:[
+      "Liste d'union : société civile, droite et centre",
+      "Une équipe de 49 colistiers qui ressemble aux Mérignacais",
+      "30 ans d'engagement de Thierry Millet au conseil municipal",
+      "Un programme construit avec les habitants, pas en bureau"
+    ]
+  }
+];
+
+let current = 0, score = 0, answered = false;
+
+function startQuiz(){
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+  loadQuestion(0);
+}
+
+function loadQuestion(idx){
+  current = idx;
+  answered = false;
+  const q = QUESTIONS[idx];
+  const card = document.getElementById('card');
+  card.classList.remove('flipped');
+  
+  // Progress
+  document.getElementById('progress-count').textContent = `${idx+1}/${QUESTIONS.length}`;
+  document.getElementById('progress-fill').style.width = `${((idx)/QUESTIONS.length)*100}%`;
+  
+  // Front
+  document.getElementById('q-theme').textContent = q.theme;
+  document.getElementById('q-text').textContent = q.question;
+  
+  const choicesEl = document.getElementById('q-choices');
+  choicesEl.innerHTML = '';
+  q.choices.forEach((c,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.innerHTML = `${c}<span class="check"></span>`;
+    btn.onclick = ()=> selectChoice(i);
+    choicesEl.appendChild(btn);
+  });
+  
+  document.getElementById('q-reveal').classList.remove('show');
+  document.getElementById('front-actions').style.display = 'none';
+  
+  // Back
+  document.getElementById('b-stat').textContent = q.backStat;
+  document.getElementById('b-title').textContent = q.backTitle;
+  const propEl = document.getElementById('b-proposals');
+  propEl.innerHTML = '';
+  q.proposals.forEach(p=>{
+    const li = document.createElement('li');
+    li.textContent = p;
+    propEl.appendChild(li);
+  });
+  
+  document.getElementById('btn-next').textContent = idx < QUESTIONS.length-1 ? 'Suivante →' : 'Voir mon score →';
+  
+  // Animate in
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(20px)';
+  requestAnimationFrame(()=>{
+    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+    card.style.opacity = '1';
+    card.style.transform = 'translateY(0)';
+    setTimeout(()=>{ 
+      card.style.transition = '';
+      card.style.transform = '';
+      card.style.opacity = '';
+    },500);
+  });
+}
+
+function selectChoice(i){
+  if(answered) return;
+  answered = true;
+  const q = QUESTIONS[current];
+  const choices = document.querySelectorAll('.choice');
+  
+  choices.forEach((c,idx)=>{
+    c.classList.add('disabled');
+    if(idx === q.correct){
+      c.classList.add('correct');
+      c.querySelector('.check').textContent = '✓';
+    } else if(idx === i && i !== q.correct){
+      c.classList.add('wrong');
+      c.querySelector('.check').textContent = '✗';
+    }
+  });
+  
+  if(i === q.correct) score++;
+  
+  // Show reveal
+  document.getElementById('q-answer-big').textContent = q.answerBig;
+  document.getElementById('q-source').textContent = q.source;
+  document.getElementById('q-reveal').classList.add('show');
+  document.getElementById('front-actions').style.display = 'flex';
+}
+
+function flipCard(){
+  document.getElementById('card').classList.toggle('flipped');
+}
+
+function nextCard(){
+  if(current < QUESTIONS.length - 1){
+    loadQuestion(current + 1);
+  } else {
+    showResult();
+  }
+}
+
+function showResult(){
+  document.getElementById('screen-quiz').classList.remove('active');
+  const rs = document.getElementById('screen-result');
+  rs.classList.add('active');
+  
+  const pct = Math.round((score/QUESTIONS.length)*100);
+  document.getElementById('score-num').textContent = score;
+  
+  // Animate circle
+  setTimeout(()=>{
+    document.getElementById('score-circle').style.setProperty('--pct', pct+'%');
+  },100);
+  
+  // Progress bar to 100%
+  document.getElementById('progress-fill').style.width = '100%';
+  
+  // Title & desc based on score
+  let title, desc;
+  if(score <= 3){
+    title = "Mérignac te réserve<br>des <em>surprises</em>";
+    desc = "Ces chiffres t'ont étonné ? Normal — ils ne sont jamais communiqués. Découvre le programme qui apporte des réponses concrètes à chacun de ces constats.";
+  } else if(score <= 7){
+    title = "Tu connais <em>ta ville</em>,<br>mais pas tout";
+    desc = "Tu sens bien que Mérignac a encore du potentiel, et les chiffres le confirment. Un programme existe pour changer les choses concrètement.";
+  } else if(score <= 10){
+    title = "Tu es un vrai<br><em>Mérignacais</em> !";
+    desc = "Tu connais bien les réalités de ta ville. Et tu sais qu'il est temps que ça change. Découvre nos propositions pour y arriver.";
+  } else {
+    title = "<em>Impressionnant</em>,<br>rien ne t'échappe !";
+    desc = "Tu maîtrises les chiffres sur le bout des doigts. Aide-nous à les faire connaître autour de toi — beaucoup de Mérignacais les ignorent encore.";
+  }
+  document.getElementById('result-title').innerHTML = title;
+  document.getElementById('result-desc').textContent = desc;
+}
+
+function shareQuiz(){
+  const text = `J'ai eu ${score}/${QUESTIONS.length} au quiz "Connais-tu vraiment Mérignac ?" 🏙️\n\nDes chiffres qui donnent à réfléchir sur notre ville…\n\nFais le test 👉`;
+  const url = window.location.href;
+  const btn = document.getElementById('btn-share');
+  
+  if(navigator.share){
+    navigator.share({
+      title:'Connais-tu vraiment Mérignac ?',
+      text: text,
+      url: url
+    }).catch(()=>{});
+  } else {
+    // Fallback: copy to clipboard
+    const full = text + ' ' + url;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(full).then(()=>{
+        btn.textContent = '✓ Copié dans le presse-papier !';
+        btn.style.background = 'var(--success)';
+        btn.style.color = '#fff';
+        setTimeout(()=>{ 
+          btn.textContent = 'Partager mon score'; 
+          btn.style.background = '';
+          btn.style.color = '';
+        },2500);
+      }).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  }
+  
+  function fallbackCopy(){
+    const ta = document.createElement('textarea');
+    ta.value = text + ' ' + url;
+    ta.style.cssText = 'position:fixed;left:-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try{
+      document.execCommand('copy');
+      btn.textContent = '✓ Copié !';
+      btn.style.background = 'var(--success)';
+      btn.style.color = '#fff';
+    }catch(e){
+      btn.textContent = 'Copie impossible';
+    }
+    document.body.removeChild(ta);
+    setTimeout(()=>{ 
+      btn.textContent = 'Partager mon score';
+      btn.style.background = '';
+      btn.style.color = '';
+    },2500);
+  }
+}
+
+function restartQuiz(){
+  score = 0;
+  document.getElementById('screen-result').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+  document.getElementById('score-circle').style.setProperty('--pct','0%');
+  loadQuestion(0);
+}
+
+function openPdf(){
+  // Mobile: open PDF in new tab (iframes don't render PDFs well on iOS/Android)
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if(isMobile){
+    window.open('programme.pdf','_blank');
+    return;
+  }
+  const modal = document.getElementById('pdf-modal');
+  const iframe = document.getElementById('pdf-iframe');
+  iframe.src = 'programme.pdf';
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePdf(){
+  const modal = document.getElementById('pdf-modal');
+  const iframe = document.getElementById('pdf-iframe');
+  modal.classList.remove('open');
+  iframe.src = '';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closePdf();
+});
+</script>
+</body>
+</html>
