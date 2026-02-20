@@ -435,27 +435,27 @@ gtag('config', 'G-BV6C9SMVCH');
 const QUESTIONS = [
   {
     theme:"Sécurité",
-    question:"Quelle part des Mérignacais se sent en sécurité dans leur ville ?",
+    question:"Quelle part des habitants considère que sa sécurité et celle de ses biens est assurée ?",
     choices:["1 sur 2","1 sur 3","1 sur 5"],
     correct:1,
     answerBig:"1 sur 3",
-    source:"Questionnaire citoyen — 1 630 réponses",
+    source:"",
     backStat:"Seul 1 Mérignacais sur 3 se sent en sécurité",
     backTitle:"Nous restaurerons l'autorité municipale",
     proposals:[
       "Doubler le budget sécurité pour renforcer effectifs, équipements et vidéoprotection",
-      "Créer des antennes de police municipale à Beutre et Bourranville",
+      "Créer plusieurs antennes de police municipale à Beutre et Bourranville",
       "Passer d'un maître-chien unique à une brigade cynophile",
       "Intégrer l'IA au dispositif de vidéoprotection"
     ]
   },
   {
     theme:"Sécurité",
-    question:"De combien les cambriolages ont-ils augmenté à Mérignac entre 2016 et 2023 ?",
+    question:"Quelle a été la hausse des cambriolages à Mérignac entre 2016 et 2023 ?",
     choices:["+20%","+35%","+48%"],
     correct:2,
     answerBig:"+48 %",
-    source:"Ministère de l'Intérieur — État 4001",
+    source:"Source : Ministère de l'Intérieur",
     backStat:"298 cambriolages en 2016, 441 en 2023. Plus de 1 par jour.",
     backTitle:"Rétablir la sécurité au quotidien",
     proposals:[
@@ -467,7 +467,7 @@ const QUESTIONS = [
   },
   {
     theme:"Urbanisme",
-    question:"Quel pourcentage des Mérignacais souhaite freiner l'urbanisation ?",
+    question:"Quelle proportion de Mérignacais souhaite ralentir l'urbanisation ?",
     choices:["52 %","73 %","89 %"],
     correct:1,
     answerBig:"73,3 %",
@@ -483,28 +483,28 @@ const QUESTIONS = [
   },
   {
     theme:"Urbanisme",
-    question:"Mérignac Soleil promettait 47 m² de nature par logement. Combien seront réellement livrés ?",
+    question:"À Mérignac Soleil, il a été promis 47 m² de nature par logement. Quelle surface sera réellement réalisée ?",
     choices:["38 m²","27 m²","16 m²"],
     correct:2,
     answerBig:"16 m²",
-    source:"France 2030 — Démonstrateurs Ville Durable",
+    source:"",
     backStat:"3 fois moins de nature que promis. La réalité derrière le label.",
     backTitle:"Accélérer la transition écologique",
     proposals:[
       "Tendre vers la règle 3-30-300 : 3 arbres visibles, 30% de végétal, espace vert à 300m",
       "Créer un square au centre de Mérignac face au tram",
       "Lutter contre l'imperméabilisation des sols",
-      "Installer pergolas et ombrières végétalisées dans les quartiers"
+      "Installer des pergolas et des ombrières végétalisées dans les quartiers"
     ]
   },
   {
     theme:"Fiscalité",
-    question:"Quelle part des Mérignacais a constaté une hausse de la taxe foncière depuis 2014 ?",
+    question:"Parmi ceux qui se sont exprimés, combien de Mérignacais ont constaté une hausse de leur taxe foncière depuis 2014 ?",
     choices:["3 sur 5","4 sur 5","9 sur 10"],
     correct:1,
     answerBig:"4 sur 5",
-    source:"Questionnaire citoyen — 1 630 réponses",
-    backStat:"80% des habitants constatent la hausse. Et le service ne suit pas.",
+    source:"",
+    backStat:"80% de ceux qui se sont exprimés constatent la hausse de la taxe foncière.",
     backTitle:"Protéger votre pouvoir d'achat",
     proposals:[
       "Audit approfondi de la gestion de la Ville en début de mandat",
@@ -519,8 +519,8 @@ const QUESTIONS = [
     choices:["2 places","1,5 place","1 place"],
     correct:2,
     answerBig:"1 place pour 2",
-    source:"Données communales — 418 places / ~800 naissances/an",
-    backStat:"88,3% des Mérignacais déplorent le manque de crèches",
+    source:"Source : INSEE",
+    backStat:"88,3% des Mérignacais déplorent le manque d'infrastructures sociales",
     backTitle:"Nous serons aux côtés des familles",
     proposals:[
       "Clarifier les critères d'attribution et créer de nouveaux berceaux",
@@ -531,12 +531,12 @@ const QUESTIONS = [
   },
   {
     theme:"Mobilité",
-    question:"Quelle part des Mérignacais se sent en sécurité à vélo ?",
+    question:"Quelle part des Mérignacais considère qu'il y a assez de pistes cyclables sécurisées ?",
     choices:["1 sur 2","1 sur 3","1 sur 5"],
     correct:1,
     answerBig:"1 sur 3",
-    source:"Questionnaire citoyen — 1 630 réponses",
-    backStat:"Et 75% trouvent les trottoirs inadaptés aux piétons",
+    source:"",
+    backStat:"Et 25% seulement trouvent que les trottoirs sont adaptés et praticables pour tous",
     backTitle:"Favoriser la fluidité de toutes les mobilités",
     proposals:[
       "Créer des pistes cyclables en site propre entre quartiers",
@@ -547,18 +547,18 @@ const QUESTIONS = [
   },
   {
     theme:"Quartiers",
-    question:"Quel pourcentage des Mérignacais ne se sent pas écouté par la municipalité ?",
-    choices:["60 %","75 %","85 %"],
+    question:"Quel pourcentage des Mérignacais se sent écouté par la municipalité ?",
+    choices:["40 %","25 %","15 %"],
     correct:2,
-    answerBig:"85 %",
-    source:"Questionnaire citoyen — 1 630 réponses",
-    backStat:"Et seulement 1 habitant sur 6 trouve l'info municipale transparente",
+    answerBig:"15 %",
+    source:"",
+    backStat:"Seul 1 habitant sur 6 trouve l'info municipale transparente",
     backTitle:"Un maire proche des Mérignacais",
     proposals:[
       "\"Le Café du Maire\" : rencontre informelle au marché du samedi",
       "\"Le Grand Rendez-vous\" : échange annuel avec toute la ville",
       "\"Un Quartier, un Élu\" : un élu dédié à chaque quartier",
-      "Remplacer 4 concierges par 10 agents de proximité + mairie mobile"
+      "Remplacer 4 concierges par 10 agents de proximité"
     ]
   },
   {
@@ -567,8 +567,8 @@ const QUESTIONS = [
     choices:["38 %","49 %","59 %"],
     correct:2,
     answerBig:"58,6 %",
-    source:"Questionnaire citoyen — 1 630 réponses",
-    backStat:"56,9% estiment aussi l'aide aux commerçants insuffisante",
+    source:"",
+    backStat:"58,6% estiment aussi l'aide aux entreprises, commerçants et artisans insuffisante",
     backTitle:"Soutenir l'économie locale et le commerce",
     proposals:[
       "Créer un incubateur dédié au commerce et à l'innovation locale",
@@ -583,8 +583,8 @@ const QUESTIONS = [
     choices:["4 par jour","6 par jour","Plus de 8 par jour"],
     correct:2,
     answerBig:"8,5 / jour",
-    source:"Ministère de l'Intérieur — 3 112 faits en 2023",
-    backStat:"41 crimes et délits pour 1 000 habitants. Chaque année.",
+    source:"Ministère de l'Intérieur",
+    backStat:"41 crimes et délits pour 1 000 habitants chaque année",
     backTitle:"Mérignac mérite mieux",
     proposals:[
       "Coopération renforcée entre polices municipale et nationale",
@@ -599,14 +599,14 @@ const QUESTIONS = [
     choices:["+22 %","+42 %","+61 %"],
     correct:1,
     answerBig:"+42 %",
-    source:"INSEE — de 57 000 à 80 898 habitants",
-    backStat:"+42% d'habitants mais les équipements n'ont pas suivi",
+    source:"INSEE",
+    backStat:"Augmentation forte de la population mais évolution moindre des équipements",
     backTitle:"Adapter la ville à sa croissance",
     proposals:[
-      "Rénover toutes les infrastructures sportives vétustes",
+      "Réhabiliter l'ensemble des écoles en état de vétusté",
       "Aménager la plaine des sports de Beutre (gymnase, parcours santé)",
-      "Implanter un lieu culturel polyvalent secteur Marne Soleil",
-      "Créer un événement sportif interquartiers chaque septembre"
+      "Doter les arts martiaux et les sports de combat d'une nouvelle salle",
+      "Implanter un lieu culturel polyvalent proche du secteur Marne Soleil"
     ]
   },
   {
@@ -615,14 +615,14 @@ const QUESTIONS = [
     choices:["52 ans","67 ans","82 ans"],
     correct:2,
     answerBig:"82 ans",
-    source:"Depuis 1944 — même famille politique sans interruption",
+    source:"",
     backStat:"Il est temps d'offrir à Mérignac une respiration démocratique.",
     backTitle:"L'alternance pour Mérignac",
     proposals:[
       "Liste d'union : société civile, droite et centre",
-      "Une équipe de 49 colistiers qui ressemble aux Mérignacais",
-      "30 ans d'engagement de Thierry Millet au conseil municipal",
-      "Un programme construit avec les habitants, pas en bureau"
+      "Une équipe de 49 colistiers qui ressemblent aux Mérignacais",
+      "30 ans d'engagement de Thierry Millet pour Mérignac",
+      "Un programme construit avec les habitants"
     ]
   }
 ];
@@ -714,6 +714,7 @@ function selectChoice(i){
   // Show reveal
   document.getElementById('q-answer-big').textContent = q.answerBig;
   document.getElementById('q-source').textContent = q.source;
+  document.getElementById('q-source').style.display = q.source ? 'block' : 'none';
   document.getElementById('q-reveal').classList.add('show');
   document.getElementById('front-actions').style.display = 'flex';
 }
