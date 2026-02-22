@@ -318,6 +318,34 @@ body::before{
   .card-face{padding:22px 18px}
   .card-question{font-size:24px}
 }
+
+/* Feedback pédagogique */
+.answer-detail{display:none;font-size:13px;line-height:1.55;color:#444;background:#F8F9FA;border-left:3px solid var(--blue);padding:10px 14px;margin-top:10px;border-radius:0 8px 8px 0}
+.answer-detail.show{display:block}
+
+/* Lien sources */
+.sources-link{font-size:11px;color:var(--gray);text-decoration:underline;cursor:pointer;opacity:.7;transition:.15s}
+.sources-link:hover{opacity:1}
+
+/* Modal sources */
+.sources-modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px}
+.sources-modal.open{display:flex}
+.sources-content{background:#fff;border-radius:16px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto;padding:28px 24px}
+.sources-content h3{font-size:18px;color:var(--blue);margin-bottom:16px}
+.sources-content h4{font-size:14px;color:var(--blue);margin:16px 0 8px;font-weight:700}
+.sources-content p{font-size:13px;line-height:1.6;color:#444;margin-bottom:8px}
+.sources-content .source-item{font-size:12px;color:#666;padding:6px 0;border-bottom:1px solid #f0f0f0}
+.sources-close{position:sticky;top:0;float:right;background:none;border:none;font-size:24px;cursor:pointer;color:var(--gray);padding:0 4px}
+
+/* Récap personnalisé */
+.recap-section{width:100%;max-width:380px;margin:12px 0}
+.recap-title{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);margin-bottom:10px}
+.recap-card{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.recap-card .recap-theme{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--blue);font-weight:700;margin-bottom:4px}
+.recap-card .recap-theme .recap-icon{margin-right:4px}
+.recap-card .recap-text{font-size:13px;color:#333;line-height:1.45}
+.recap-card.surprise{border-left:3px solid var(--error)}
+.recap-card.known{border-left:3px solid var(--success)}
 </style>
 <!-- Google Analytics 4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BV6C9SMVCH"></script>
@@ -349,6 +377,7 @@ gtag('config', 'G-BV6C9SMVCH');
       Jouer →
     </button>
     <div class="fade-in fade-in-d5" style="font-size:11px;color:var(--gray);opacity:0.5">12 questions · 3 min</div>
+    <div class="fade-in fade-in-d5" style="margin-top:8px"><span class="sources-link" onclick="openSources()">📋 Méthodologie &amp; sources</span></div>
   </div>
 
   <!-- QUIZ -->
@@ -370,6 +399,7 @@ gtag('config', 'G-BV6C9SMVCH');
             <div class="answer-reveal" id="q-reveal">
               <div class="answer-big" id="q-answer-big"></div>
               <div class="answer-source" id="q-source"></div>
+              <div class="answer-detail" id="q-detail"></div>
             </div>
             <div class="card-actions" id="front-actions" style="display:none">
               <button class="btn btn-primary" onclick="flipCard()">Voir notre réponse →</button>
@@ -398,22 +428,48 @@ gtag('config', 'G-BV6C9SMVCH');
     </div>
     <h2 id="result-title"></h2>
     <p class="result-desc" id="result-desc"></p>
+
+    <!-- Récap personnalisé -->
+    <div class="recap-section" id="recap-section"></div>
+
     <div class="result-cta">
       <div class="cta-name">THIERRY MILLET</div>
       <div class="cta-list">Candidat à la mairie de Mérignac</div>
       <div class="cta-rassemble">MÉRIGNAC NOUS RASSEMBLE</div>
       <div class="cta-alliance">Liste d'union · Société civile · Droite &amp; Centre</div>
-      <a class="cta-link" href="#" onclick="openPdf();return false">Découvrir le programme complet →</a>
+      <a class="cta-link" href="#" onclick="openPdf();return false">📄 Découvrir le programme complet →</a>
     </div>
+    <a class="btn btn-whatsapp" onclick="gtag('event','whatsapp_contact',{score:score})" href="https://wa.me/33620350289?text=Bonjour%20!%20Je%20viens%20de%20faire%20le%20quiz%20%22Connais-tu%20vraiment%20M%C3%A9rignac%20%3F%22%20et%20j%27aimerais%20en%20savoir%20plus%20sur%20le%20projet%20de%20Thierry%20Millet." target="_blank" rel="noopener" style="text-decoration:none;width:100%;max-width:340px;padding:14px 24px;font-size:15px">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Échanger avec l'équipe de campagne
+    </a>
     <div class="share-row">
       <button class="btn btn-primary" id="btn-share" onclick="shareQuiz()">Partager mon score</button>
       <button class="btn btn-secondary" onclick="restartQuiz()">Rejouer</button>
     </div>
-    <a class="btn btn-whatsapp" onclick="gtag('event','whatsapp_contact',{score:score})" href="https://wa.me/33620350289?text=Bonjour%20!%20Je%20viens%20de%20faire%20le%20quiz%20%22Connais-tu%20vraiment%20M%C3%A9rignac%20%3F%22%20et%20j%27aimerais%20en%20savoir%20plus%20sur%20le%20projet%20de%20Thierry%20Millet." target="_blank" rel="noopener" style="text-decoration:none;width:100%;max-width:340px;padding:14px 24px;font-size:15px">
-      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      Parler avec l'équipe de campagne
-    </a>
+    <div style="margin-top:8px"><span class="sources-link" onclick="openSources()">📋 Méthodologie &amp; sources</span></div>
     <div class="footer-strip">21 500 foyers · 1 630 réponses · 617 témoignages · 30 ans d'engagement<br>15 &amp; 22 mars 2026</div>
+  </div>
+
+  <!-- SOURCES MODAL -->
+  <div class="sources-modal" id="sources-modal" onclick="if(event.target===this)closeSources()">
+    <div class="sources-content">
+      <button class="sources-close" onclick="closeSources()">✕</button>
+      <h3>📋 Méthodologie &amp; sources</h3>
+
+      <h4>Le questionnaire citoyen</h4>
+      <p>Entre 2024 et 2025, l'équipe de Thierry Millet a mené un <b>porte-à-porte dans tous les quartiers de Mérignac</b>. Au total, 21 500 foyers ont été visités. 1 630 habitants ont répondu au questionnaire, et 617 ont laissé un témoignage libre.</p>
+      <p>Les questions portaient sur la sécurité, l'urbanisme, la fiscalité, les services publics, la mobilité, le commerce et la démocratie locale. Les réponses ont été compilées et analysées de manière anonyme.</p>
+
+      <h4>Les sources institutionnelles</h4>
+      <div class="source-item"><b>Ministère de l'Intérieur</b> — Statistiques de la délinquance (base nationale des crimes et délits enregistrés)</div>
+      <div class="source-item"><b>INSEE</b> — Données de population et démographie communale</div>
+      <div class="source-item"><b>Données communales</b> — Capacités d'accueil petite enfance, équipements publics</div>
+
+      <h4>Comment lire les résultats</h4>
+      <p>Les chiffres présentés dans ce quiz reflètent soit les réponses au questionnaire citoyen (données déclaratives), soit des données publiques vérifiables. Chaque question indique sa source quand elle est disponible.</p>
+      <p>Ce quiz a vocation informative et pédagogique. Il vise à faire connaître des réalités souvent méconnues de la vie mérignacaise, et à présenter les propositions du programme de Thierry Millet.</p>
+    </div>
   </div>
 
   <!-- PDF MODAL -->
@@ -440,6 +496,7 @@ const QUESTIONS = [
     correct:1,
     answerBig:"1 sur 3",
     source:"",
+    detail:"Sur les 1 630 Mérignacais qui se sont exprimés, seul un tiers estime que sa sécurité est correctement assurée. Un sentiment partagé dans tous les quartiers.",
     backStat:"Seul 1 Mérignacais sur 3 se sent en sécurité",
     backTitle:"Nous restaurerons l'autorité municipale",
     proposals:[
@@ -456,6 +513,7 @@ const QUESTIONS = [
     correct:2,
     answerBig:"+48 %",
     source:"Source : Ministère de l'Intérieur",
+    detail:"En 7 ans, Mérignac est passée de 298 à 441 cambriolages par an, soit plus d'un par jour. Une hausse bien supérieure à la moyenne de la métropole bordelaise.",
     backStat:"298 cambriolages en 2016, 441 en 2023. Plus de 1 par jour.",
     backTitle:"Rétablir la sécurité au quotidien",
     proposals:[
@@ -472,6 +530,7 @@ const QUESTIONS = [
     correct:1,
     answerBig:"73,3 %",
     source:"Questionnaire citoyen — 1 630 réponses",
+    detail:"Près de 3 habitants sur 4 estiment que la ville se construit trop vite, au détriment du cadre de vie. Ce rejet massif de la bétonisation traverse tous les quartiers.",
     backStat:"Près de 3 Mérignacais sur 4 disent stop au béton",
     backTitle:"Nous modérerons l'urbanisation",
     proposals:[
@@ -488,6 +547,7 @@ const QUESTIONS = [
     correct:2,
     answerBig:"16 m²",
     source:"",
+    detail:"Le projet Mérignac Soleil affichait 47 m² de nature par logement. Les documents officiels révèlent que seuls 16 m² seront effectivement livrés : 3 fois moins que la promesse initiale.",
     backStat:"3 fois moins de nature que promis. La réalité derrière le label.",
     backTitle:"Accélérer la transition écologique",
     proposals:[
@@ -504,6 +564,7 @@ const QUESTIONS = [
     correct:1,
     answerBig:"4 sur 5",
     source:"",
+    detail:"Parmi les répondants, 4 sur 5 déclarent avoir vu leur taxe foncière augmenter significativement depuis 2014, sans percevoir d'amélioration proportionnelle des services municipaux.",
     backStat:"80% de ceux qui se sont exprimés constatent la hausse de la taxe foncière.",
     backTitle:"Protéger votre pouvoir d'achat",
     proposals:[
@@ -520,6 +581,7 @@ const QUESTIONS = [
     correct:2,
     answerBig:"1 place pour 2",
     source:"Source : INSEE",
+    detail:"Avec environ 800 naissances par an et 418 places en crèche, Mérignac ne peut accueillir qu'un bébé sur deux. Un déficit structurel qui pèse sur les familles.",
     backStat:"88,3% des Mérignacais déplorent le manque d'infrastructures sociales",
     backTitle:"Nous serons aux côtés des familles",
     proposals:[
@@ -536,6 +598,7 @@ const QUESTIONS = [
     correct:1,
     answerBig:"1 sur 3",
     source:"",
+    detail:"Deux tiers des Mérignacais estiment que le réseau cyclable est insuffisant ou dangereux. Les trottoirs sont aussi pointés du doigt : seul 1 habitant sur 4 les juge praticables pour tous.",
     backStat:"… Et 25% seulement trouvent que les trottoirs sont adaptés et praticables pour tous",
     backTitle:"Favoriser la fluidité de toutes les mobilités",
     proposals:[
@@ -552,6 +615,7 @@ const QUESTIONS = [
     correct:2,
     answerBig:"15 %",
     source:"",
+    detail:"85% des répondants ne se sentent pas écoutés par la municipalité. Et seul 1 habitant sur 6 juge l'information municipale transparente. Un fossé entre élus et citoyens.",
     backStat:"Seul 1 habitant sur 6 trouve l'info municipale transparente",
     backTitle:"Un maire proche des Mérignacais",
     proposals:[
@@ -568,6 +632,7 @@ const QUESTIONS = [
     correct:2,
     answerBig:"58,6 %",
     source:"",
+    detail:"Près de 6 Mérignacais sur 10 jugent que la ville ne soutient pas assez ses entreprises, commerçants et artisans. Le tissu économique local demande un vrai plan d'accompagnement.",
     backStat:"58,6% estiment aussi l'aide aux entreprises, commerçants et artisans insuffisante",
     backTitle:"Soutenir l'économie locale et le commerce",
     proposals:[
@@ -584,6 +649,7 @@ const QUESTIONS = [
     correct:2,
     answerBig:"8,5 / jour",
     source:"Ministère de l'Intérieur",
+    detail:"3 112 crimes et délits enregistrés en 2023, soit 8,5 par jour. Rapporté à la population, cela place Mérignac à 41 faits pour 1 000 habitants — un taux élevé pour une ville de cette taille.",
     backStat:"41 crimes et délits pour 1 000 habitants chaque année",
     backTitle:"Mérignac mérite mieux",
     proposals:[
@@ -600,6 +666,7 @@ const QUESTIONS = [
     correct:1,
     answerBig:"+42 %",
     source:"INSEE",
+    detail:"En 30 ans, Mérignac est passée de 57 000 à plus de 80 000 habitants. Mais les écoles, gymnases et équipements culturels n'ont pas suivi cette croissance démographique.",
     backStat:"Augmentation forte de la population mais évolution moindre des équipements",
     backTitle:"Adapter la ville à sa croissance",
     proposals:[
@@ -616,6 +683,7 @@ const QUESTIONS = [
     correct:2,
     answerBig:"82 ans",
     source:"",
+    detail:"Depuis la Libération en 1944, Mérignac n'a jamais connu d'alternance politique. 82 ans d'une même famille politique aux commandes — un record en Gironde.",
     backStat:"Il est temps d'offrir à Mérignac une respiration démocratique.",
     backTitle:"L'alternance pour Mérignac",
     proposals:[
@@ -628,6 +696,7 @@ const QUESTIONS = [
 ];
 
 let current = 0, score = 0, answered = false;
+let themeResults = []; // {theme, question, correct, backTitle, proposals}
 
 function startQuiz(){
   document.getElementById('screen-intro').classList.remove('active');
@@ -662,6 +731,7 @@ function loadQuestion(idx){
   });
   
   document.getElementById('q-reveal').classList.remove('show');
+  document.getElementById('q-detail').classList.remove('show');
   document.getElementById('front-actions').style.display = 'none';
   
   // Back
@@ -711,10 +781,29 @@ function selectChoice(i){
   
   if(i === q.correct) score++;
   
+  // Track theme result
+  themeResults.push({
+    theme: q.theme,
+    question: q.question,
+    correct: i === q.correct,
+    backTitle: q.backTitle,
+    proposals: q.proposals
+  });
+  
   // Show reveal
   document.getElementById('q-answer-big').textContent = q.answerBig;
   document.getElementById('q-source').textContent = q.source;
   document.getElementById('q-source').style.display = q.source ? 'block' : 'none';
+  
+  // Show pedagogical detail
+  const detailEl = document.getElementById('q-detail');
+  if(q.detail){
+    detailEl.textContent = q.detail;
+    detailEl.classList.add('show');
+  } else {
+    detailEl.classList.remove('show');
+  }
+  
   document.getElementById('q-reveal').classList.add('show');
   document.getElementById('front-actions').style.display = 'flex';
 }
@@ -778,6 +867,42 @@ function showResult(){
   }
   document.getElementById('result-title').innerHTML = title;
   document.getElementById('result-desc').textContent = desc;
+  
+  // === PERSONALIZED RECAP ===
+  const recapEl = document.getElementById('recap-section');
+  recapEl.innerHTML = '';
+  
+  const surprises = themeResults.filter(r => !r.correct);
+  const known = themeResults.filter(r => r.correct);
+  
+  if(surprises.length > 0){
+    const h = document.createElement('div');
+    h.className = 'recap-title';
+    h.textContent = '⚡ Ce qui t\'a surpris — nos réponses';
+    recapEl.appendChild(h);
+    
+    surprises.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'recap-card surprise';
+      card.innerHTML = `<div class="recap-theme"><span class="recap-icon">⚡</span>${r.theme}</div><div class="recap-text"><b>${r.backTitle}</b> → ${r.proposals[0]}</div>`;
+      recapEl.appendChild(card);
+    });
+  }
+  
+  if(known.length > 0){
+    const h = document.createElement('div');
+    h.className = 'recap-title';
+    h.style.marginTop = '16px';
+    h.textContent = '✓ Ce que tu savais déjà';
+    recapEl.appendChild(h);
+    
+    known.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'recap-card known';
+      card.innerHTML = `<div class="recap-theme"><span class="recap-icon">✓</span>${r.theme}</div><div class="recap-text">${r.backTitle}</div>`;
+      recapEl.appendChild(card);
+    });
+  }
 }
 
 function shareQuiz(){
@@ -836,10 +961,20 @@ function shareQuiz(){
 
 function restartQuiz(){
   score = 0;
+  themeResults = [];
   document.getElementById('screen-result').classList.remove('active');
   document.getElementById('screen-quiz').classList.add('active');
   document.getElementById('score-circle').style.setProperty('--pct','0%');
   loadQuestion(0);
+}
+
+function openSources(){
+  document.getElementById('sources-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSources(){
+  document.getElementById('sources-modal').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 function openPdf(){
